@@ -9,7 +9,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token obtained from BotFather
-BOT_TOKEN = "YOUR_BOT_TOKEN"
+BOT_TOKEN = "7398454863:AAFFC73WT2REuygaceCxpPAIzTWt4JBjZ1M"
 
 # Start command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -32,9 +32,9 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"You said: {user_message}")
 
 # Error handler
-async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logger.error(msg="Exception while handling an update:", exc_info=context.error)
-    if update:
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
+    logger.error("Exception while handling an update:", exc_info=context.error)
+    if isinstance(update, Update) and update.message:
         await update.message.reply_text("Oops! Something went wrong.")
 
 def main():
@@ -48,12 +48,13 @@ def main():
     # Add message handler for text messages
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
-    # Add error handler
-    app.add_error_handler(error_handler)
-
     # Start the bot in polling mode
     logger.info("Starting the bot...")
-    app.run_polling()
+
+    try:
+        app.run_polling()
+    except Exception as e:
+        logger.error(f"Bot encountered an error: {e}")
 
 if __name__ == "__main__":
     main()
